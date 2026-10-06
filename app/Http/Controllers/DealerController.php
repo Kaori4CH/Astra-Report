@@ -6,13 +6,20 @@ use Illuminate\Http\Request;
 
 class DealerController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
+
+public function index()
+{
+    $title = 'Halaman-Dealers';
+
+    $Dealers = [
+        [
+            'code dealer' => 'DLP-031',
+            'name dealer' => 'Budi',
+        ]
+    ];
+
+    return view('Dealers.index', compact('title', 'Dealers'));
+}
 
     /**
      * Show the form for creating a new resource.
