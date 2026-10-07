@@ -7,6 +7,7 @@
 
 <div class="mb-8 flex items-end justify-between border-b border-[#E5E3DB] pb-5">
     <div>
+        
         <p class="mb-1 text-[11px] uppercase tracking-[0.2em] text-[#A16207]">Halaman dealer</p>
         <h1 class="font-display text-3xl font-semibold text-[#16213A]">Daftar Dealer</h1>
     </div>
@@ -19,30 +20,31 @@
     <table class="w-full text-left text-sm">
         <thead>
             <tr class="border-b border-[#16213A] text-[11px] uppercase tracking-[0.15em] text-[#16213A]">
+                <th class="w-14 px-5 py-3.5 font-semibold">No.</th>
                 <th class="w-14 px-5 py-3.5 font-semibold">Kode dealer</th>
                 <th class="w-14 px-5 py-3.5 font-semibold">Name dealer</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($Dealers as $Dealer)
+            @foreach($dealers as $dealer)
                 <tr class="border-b border-[#EFEDE6] hover:bg-[#FAF9F5]">
                     <td class="px-5 py-4 font-display text-lg text-[#A16207]">
                         {{ $loop->iteration }}
                     </td>
                     <td class="px-5 py-4 font-medium text-[#16213A]">
-                        {{ $Dealer['code dealer'] }}
+                        {{ $dealer->code }}
                     </td>
                     <td class="px-5 py-4 f ont-medium text-[#16213A]">
-                        {{ $Dealer['name dealer'] }}
+                        {{ $dealer->name}}
                     </td>
                     <td class="px-5 py-4">
                     <div class="flex justify-end gap-4 text-xs font-medium">
-                        <a href="{{ route('Dealers.show', ['Dealer' => 'DLP-031']) }}"
+                        <a href="{{ route('Dealers.show', ['Dealer' => $dealer-> id]) }}"
                             class="text-[#16213A] hover:text-[#A16207]">
                             Lihat
                         </a>
 
-                        <a href="{{ route('Dealers.edit', ['Dealer' => 'DLP-031']) }}"
+                        <a href="{{ route('Dealers.edit', ['Dealer' => $student->id]) }}"
                             class="text-[#16213A] hover:text-[#A16207]">
                             Ubah
                         </a>

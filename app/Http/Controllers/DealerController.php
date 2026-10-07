@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\dealer;
 use Illuminate\Http\Request;
 
 class DealerController extends Controller
@@ -11,22 +12,23 @@ public function index()
 {
     $title = 'Halaman-Dealers';
 
-    $Dealers = [
-        [
-            'code dealer' => 'DLP-031',
-            'name dealer' => 'Budi',
-        ]
-    ];
+    $dealers = dealer::select('code', 'name')->get();
 
-    return view('Dealers.index', compact('title', 'Dealers'));
+    
+    return view('Dealers.index', compact('title', 'dealers'));
 }
+
 
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        //
+         $title = 'Halaman-Dealer';
+
+        return view('Dealers.create', [
+            'title' => $title,
+            ]);
     }
 
     /**
