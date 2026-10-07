@@ -2,72 +2,82 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\dealer;
+use App\Http\Requests\Dealer\StoreRequest;
+use App\Http\Requests\Dealer\UpdateRequest;
+use App\Models\Dealer;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class DealerController extends Controller
 {
-
-public function index()
-{
-    $title = 'Halaman-Dealers';
-
-    $dealers = dealer::select('code', 'name')->get();
-
-    
-    return view('Dealers.index', compact('title', 'dealers'));
-}
-
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function index(Request $request): View
     {
-         $title = 'Halaman-Dealer';
+        $search = $request->query('search');
 
-        return view('Dealers.create', [
-            'title' => $title,
-            ]);
+        $dealers = Dealer::query()
+            ->when($search, function ($query, $search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('code', 'like', "%{$search}%")
+                        ->orWhere('name', 'like', "%{$search}%");
+                });
+            })
+            ->orderBy('code')
+            ->simplePaginate(10)
+            ->withQueryString();
+
+        return view('dealers.index', [
+            'title' => 'Astra Report - Daftar Dealer',
+            'dealers' => $dealers,
+        ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function create(): View
     {
-        //
+        return view('dealers.create', [
+            'title' => 'Astra Report - Tambah Dealer',
+        ]);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function store(StoreRequest $request): RedirectResponse
     {
-        //
+        Dealer::create($request->validated());
+
+        return redirect()->route('dealers.index')->with('success', 'Data dealer berhasil ditambahkan.');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function show(Dealer $dealer): View
     {
-        //
+        return view('dealers.show', [
+            'title' => 'Astra Report - Detail Dealer',
+            'dealer' => $dealer,
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function edit(Dealer $dealer): View
     {
-        //
+        return view('dealers.edit', [
+            'title' => 'Astra Report - Edit Dealer',
+            'dealer' => $dealer,
+        ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function update(UpdateRequest $request, Dealer $dealer): RedirectResponse
     {
-        //
+        $dealer->update($request->validated());
+
+        return redirect()->route('dealers.index')->with('success', 'Data dealer berhasil diperbarui.');
+    }
+
+    public function destroy(Dealer $dealer): RedirectResponse
+    {
+        if ($dealer->isInUse()) {
+            return redirect()->route('dealers.index')
+                ->with('error', 'Data dealer tidak dapat dihapus karena masih memiliki akun atau data pengumpulan.');
+        }
+
+        $dealer->delete();
+
+        return redirect()->route('dealers.index')->with('success', 'Data dealer berhasil dihapus.');
     }
 }

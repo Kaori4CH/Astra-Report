@@ -2,63 +2,82 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Area\StoreRequest;
+use App\Http\Requests\Area\UpdateRequest;
+use App\Models\Area;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class AreaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request): View
     {
-        //
+        $search = $request->query('search');
+
+        $areas = Area::query()
+            ->when($search, function ($query, $search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('code', 'like', "%{$search}%")
+                        ->orWhere('name', 'like', "%{$search}%");
+                });
+            })
+            ->orderBy('code')
+            ->simplePaginate(10)
+            ->withQueryString();
+
+        return view('areas.index', [
+            'title' => 'Astra Report - Daftar Area',
+            'areas' => $areas,
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function create(): View
     {
-        //
+        return view('areas.create', [
+            'title' => 'Astra Report - Tambah Area',
+        ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(StoreRequest $request): RedirectResponse
     {
-        //
+        Area::create($request->validated());
+
+        return redirect()->route('areas.index')->with('success', 'Data area berhasil ditambahkan.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Area $area): View
     {
-        //
+        return view('areas.show', [
+            'title' => 'Astra Report - Detail Area',
+            'area' => $area,
+        ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit(Area $area): View
     {
-        //
+        return view('areas.edit', [
+            'title' => 'Astra Report - Edit Area',
+            'area' => $area,
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(UpdateRequest $request, Area $area): RedirectResponse
     {
-        //
+        $area->update($request->validated());
+
+        return redirect()->route('areas.index')->with('success', 'Data area berhasil diperbarui.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(Area $area): RedirectResponse
     {
-        //
+        if ($area->isInUse()) {
+            return redirect()->route('areas.index')
+                ->with('error', 'Data area tidak dapat dihapus karena masih dipakai oleh tugas.');
+        }
+
+        $area->delete();
+
+        return redirect()->route('areas.index')->with('success', 'Data area berhasil dihapus.');
     }
 }

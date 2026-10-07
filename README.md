@@ -1,3 +1,24 @@
+# Astra Report (LMS Astra)
+
+Laravel 13 + Blade + Tailwind CSS. Supervisor membuat tugas, dealer mengumpulkan link Google Drive, supervisor memeriksa (DISETUJUI / REVISI / DITOLAK).
+
+## Menjalankan
+
+```sh
+composer install && npm install
+cp .env.example .env && php artisan key:generate
+touch database/database.sqlite   # jika memakai SQLite
+php artisan migrate --seed
+npm run dev    # terminal 1
+php artisan serve   # terminal 2
+php artisan test
+```
+
+Akun seeder (password: `password`): `supervisor@astra.test`, `dealer1@astra.test`, `dealer2@astra.test`.
+Dealer baru dapat mendaftar sendiri di `/register`; akun supervisor hanya dari seeder.
+
+---
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
